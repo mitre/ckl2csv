@@ -20,99 +20,106 @@ def escape_and_prep(str)
   return mstr
 end
 
-ckl = Nokogiri::XML(File.open("rhel7-clean.ckl"))
+if ARGV.length < 1
+  print "Please specify a CKL file as an argument.\n"
+  print "ruby ckl2csv.rb <file.ckl>\n"
+end
+
+ckl = Nokogiri::XML(File.open(ARGV[0]))
 ckl.remove_namespaces!
 output = File.new("output.csv","w")
-output << "Vuln ID,Severity,Group Title,Rule ID,STIG ID,Rule Title,Discussion,IA Control,Check Content,Fix Text,False Positives,False Negatives,Documentable,Mitigations,Potential Impact,Third Party Tools,Mitigation Control,Responsibility,Severity Override Guidance,Check Content Reference,Weight,Classification,STIG,Target Key,CCIs,Status,Finding Details,High,Mod,Low,PII,PHI,CSP-Mod,CSP-Low,Notes,Severity Override,Severity Override Justification\n"
+output << "Vuln ID,Severity,Group Title,Rule ID,Rule Ver,Rule Title,Discussion,IA Control,Check Content,Fix Text,False Positives,False Negatives,Documentable,Mitigations,Potential Impact,Third Party Tools,Mitigation Control,Responsibility,Severity Override Guidance,Check Content Reference,Weight,Classification,STIG Ref,Target Key,CCIs,Status,Finding Details,High,Mod,Low,PII,PHI,CSP-Mod,CSP-Low,Notes,Severity Override,Severity Override Justification\n"
 
 vulns_xpath = "//CHECKLIST/STIGS/iSTIG/VULN"
 ckl.xpath(vulns_xpath).each do |node|
   @row = Array.new()
-  vuln_num = node.xpath("./STIG_DATA[1]/ATTRIBUTE_DATA/text()").text 	
+  vuln_num = node.xpath("STIG_DATA[VULN_ATTRIBUTE/text()='Vuln_Num']/ATTRIBUTE_DATA/text()").text
+  
   @row << escape_and_prep(vuln_num)
   
-  severity = node.xpath("./STIG_DATA[2]/ATTRIBUTE_DATA/text()").text 
+  severity = node.xpath("STIG_DATA[VULN_ATTRIBUTE/text()='Severity']/ATTRIBUTE_DATA/text()").text 
   @row << escape_and_prep(severity)
   
-  group_title = node.xpath("./STIG_DATA[3]/ATTRIBUTE_DATA/text()").text 
+  group_title = node.xpath("STIG_DATA[VULN_ATTRIBUTE/text()='Group_Title']/ATTRIBUTE_DATA/text()").text 
   @row << escape_and_prep(group_title)
     
-  rule_id = node.xpath("./STIG_DATA[4]/ATTRIBUTE_DATA/text()").text 
+  rule_id = node.xpath("STIG_DATA[VULN_ATTRIBUTE/text()='Rule_ID']/ATTRIBUTE_DATA/text()").text 
   @row << escape_and_prep(rule_id)
 
-  stig_id = node.xpath("./STIG_DATA[5]/ATTRIBUTE_DATA/text()").text
-  @row << escape_and_prep(stig_id)
+  rule_ver = node.xpath("STIG_DATA[VULN_ATTRIBUTE/text()='Rule_Ver']/ATTRIBUTE_DATA/text()").text
+  @row << escape_and_prep(rule_ver)
 
-  rule_title = node.xpath("./STIG_DATA[6]/ATTRIBUTE_DATA/text()").text 
+  rule_title = node.xpath("STIG_DATA[VULN_ATTRIBUTE/text()='Rule_Title']/ATTRIBUTE_DATA/text()").text 
   @row << escape_and_prep(rule_title)
     
-  vuln_discuss = node.xpath("./STIG_DATA[7]/ATTRIBUTE_DATA/text()").text 
+  vuln_discuss = node.xpath("STIG_DATA[VULN_ATTRIBUTE/text()='Vuln_Discuss']/ATTRIBUTE_DATA/text()").text 
   @row << escape_and_prep(vuln_discuss)
     
-  ia_controls = node.xpath("./STIG_DATA[8]/ATTRIBUTE_DATA/text()").text 
+  ia_controls = node.xpath("STIG_DATA[VULN_ATTRIBUTE/text()='IA_Controls']/ATTRIBUTE_DATA/text()").text 
   @row << escape_and_prep(ia_controls)
     
-  check_content = node.xpath("./STIG_DATA[9]/ATTRIBUTE_DATA/text()").text 
+  check_content = node.xpath("STIG_DATA[VULN_ATTRIBUTE/text()='Check_Content']/ATTRIBUTE_DATA/text()").text 
   @row << escape_and_prep(check_content)
     
-  fix_text = node.xpath("./STIG_DATA[10]/ATTRIBUTE_DATA/text()").text 
+  fix_text = node.xpath("STIG_DATA[VULN_ATTRIBUTE/text()='Fix_Text']/ATTRIBUTE_DATA/text()").text 
   @row << escape_and_prep(fix_text)
     
-  false_positives = node.xpath("./STIG_DATA[11]/ATTRIBUTE_DATA/text()").text 
+  false_positives = node.xpath("STIG_DATA[VULN_ATTRIBUTE/text()='False_Positives']/ATTRIBUTE_DATA/text()").text 
   @row << escape_and_prep(false_positives)
    
-  false_negatives = node.xpath("./STIG_DATA[12]/ATTRIBUTE_DATA/text()").text 
+  false_negatives = node.xpath("STIG_DATA[VULN_ATTRIBUTE/text()='False_Negatives']/ATTRIBUTE_DATA/text()").text 
   @row << escape_and_prep(false_negatives)
   
-  documentable = node.xpath("./STIG_DATA[13]/ATTRIBUTE_DATA/text()").text 
+  documentable = node.xpath("STIG_DATA[VULN_ATTRIBUTE/text()='Documentable']/ATTRIBUTE_DATA/text()").text 
   @row << escape_and_prep(documentable)
 
-  mitigations = node.xpath("./STIG_DATA[14]/ATTRIBUTE_DATA/text()").text 
+  mitigations = node.xpath("STIG_DATA[VULN_ATTRIBUTE/text()='Mitigations']/ATTRIBUTE_DATA/text()").text 
   @row << escape_and_prep(mitigations)
   
-  potential_impact = node.xpath("./STIG_DATA[15]/ATTRIBUTE_DATA/text()").text 
+  potential_impact = node.xpath("STIG_DATA[VULN_ATTRIBUTE/text()='Potential_Impact']/ATTRIBUTE_DATA/text()").text 
   @row << escape_and_prep(potential_impact)
   
-  third_party_tools = node.xpath("./STIG_DATA[16]/ATTRIBUTE_DATA/text()").text 
+  third_party_tools = node.xpath("STIG_DATA[VULN_ATTRIBUTE/text()='Third_Party_Tools']/ATTRIBUTE_DATA/text()").text 
   @row << escape_and_prep(third_party_tools)
   
-  mitigation_control = node.xpath("./STIG_DATA[17]/ATTRIBUTE_DATA/text()").text 
+  mitigation_control = node.xpath("STIG_DATA[VULN_ATTRIBUTE/text()='Mitigation_Control']/ATTRIBUTE_DATA/text()").text 
   @row << escape_and_prep(mitigation_control)
    
-  responsibility = node.xpath("./STIG_DATA[18]/ATTRIBUTE_DATA/text()").text 
+  responsibility = node.xpath("STIG_DATA[VULN_ATTRIBUTE/text()='Responsibility']/ATTRIBUTE_DATA/text()").text 
   @row << escape_and_prep(responsibility)
    
-  severity_override_guidance = node.xpath("./STIG_DATA[19]/ATTRIBUTE_DATA/text()").text 
+  severity_override_guidance = node.xpath("STIG_DATA[VULN_ATTRIBUTE/text()='Security_Override_Guidance']/ATTRIBUTE_DATA/text()").text 
   @row << escape_and_prep(severity_override_guidance)
   
-  check_content_ref = node.xpath("./STIG_DATA[20]/ATTRIBUTE_DATA/text()").text 
+  check_content_ref = node.xpath("STIG_DATA[VULN_ATTRIBUTE/text()='Check_Content_Ref']/ATTRIBUTE_DATA/text()").text 
   @row << escape_and_prep(check_content_ref)
   
-  weight = node.xpath("./STIG_DATA[21]/ATTRIBUTE_DATA/text()").text 
+  weight = node.xpath("STIG_DATA[VULN_ATTRIBUTE/text()='Weight']/ATTRIBUTE_DATA/text()").text 
   @row << escape_and_prep(weight)
   
-  classification = node.xpath("./STIG_DATA[22]/ATTRIBUTE_DATA/text()").text 
+  classification = node.xpath("STIG_DATA[VULN_ATTRIBUTE/text()='Class']/ATTRIBUTE_DATA/text()").text 
   @row << escape_and_prep(classification)
   
-  stig_ref = node.xpath("./STIG_DATA[23]/ATTRIBUTE_DATA/text()").text 
+  stig_ref = node.xpath("STIG_DATA[VULN_ATTRIBUTE/text()='STIGRef']/ATTRIBUTE_DATA/text()").text 
   @row << escape_and_prep(stig_ref)
 
-  target_key = node.xpath("./STIG_DATA[24]/ATTRIBUTE_DATA/text()").text
+  target_key = node.xpath("STIG_DATA[VULN_ATTRIBUTE/text()='TargetKey']/ATTRIBUTE_DATA/text()").text
   @row << escape_and_prep(target_key)
 
   @ccis = Array.new()
-  node.xpath("./STIG_DATA/VULN_ATTRIBUTE[text()='CCI_REF']/following::ATTRIBUTE_DATA[1]/text()").each do |c|
+  cci_node = node.xpath("STIG_DATA[VULN_ATTRIBUTE/text()='CCI_REF']/ATTRIBUTE_DATA")
+  cci_node.each do |c|
     @ccis << c
   end
   @row << escape_and_prep(@ccis.join("\n"))
 
-  status = node.xpath("./STATUS/text()").text                                                                                                                                          
+  status = node.xpath("STATUS/text()").text                                                                                                                                          
   @row << escape_and_prep(status)
 
-  finding_details = node.xpath("./FINDING_DETAILS/text()").text
+  finding_details = node.xpath("FINDING_DETAILS/text()").text
   @row << escape_and_prep(finding_details)
  
-  comments = node.xpath("./COMMENTS/text()").text
+  comments = node.xpath("COMMENTS/text()").text
   @comments_array = comments.split("\n") 
   @comments_array.each do |e|
     @ev = e.split(",")
@@ -134,14 +141,14 @@ ckl.xpath(vulns_xpath).each do |node|
       @ev.delete_at(0)
       @row << @ev.join(",")
     else
-      print "ERROR: found something that I don't know what it is ("+@ev[0]+").\n"
+      print "ERROR: found something that I don't know what it is ("+@ev[0].to_s+").\n"
     end
   end
 
-  severity_override = node.xpath("./SEVERITY_OVERRIDE/text()").text
+  severity_override = node.xpath("SEVERITY_OVERRIDE/text()").text
   @row << escape_and_prep(severity_override)
 
-  severity_justification = node.xpath("./SEVERITY_JUSTIFICATION/text()").text
+  severity_justification = node.xpath("SEVERITY_JUSTIFICATION/text()").text
   @row << escape_and_prep(severity_justification)
 
   output << @row.join(",")+"\n"
