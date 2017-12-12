@@ -25,9 +25,20 @@ if ARGV.length < 1
   print "ruby ckl2csv.rb <file.ckl>\n"
 end
 
-ckl = Nokogiri::XML(File.open(ARGV[0]))
+# take CKL file as an argument
+filename = ARGV[0].to_str
+ckl = Nokogiri::XML(File.open(filename))
 ckl.remove_namespaces!
-output = File.new("output.csv","w")
+
+# add code to extract filename from input CKL if it has an extension and use to make filename.CSV
+output_filename = ""
+if filename.index('.')
+  output_filename = filename.slice(0..(filename.index('.')-1))
+else
+  output_filename = filename
+end
+
+output = File.new(output_filename+".csv","w")
 output << "Vuln ID,Severity,Group Title,Rule ID,Rule Ver,Rule Title,Discussion,IA Control,Check Content,Fix Text,False Positives,False Negatives,Documentable,Mitigations,Potential Impact,Third Party Tools,Mitigation Control,Responsibility,Severity Override Guidance,Check Content Reference,Weight,Classification,STIG Ref,Target Key,CCIs,Status,Finding Details,High,Mod,Low,PII,PHI,CSP-Mod,CSP-Low,Notes,Severity Override,Severity Override Justification\n"
 
 vulns_xpath = "//CHECKLIST/STIGS/iSTIG/VULN"
