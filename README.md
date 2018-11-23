@@ -1,3 +1,7 @@
+# This has been merged into the inspec_tools gem
+
+## NOTE: This repo is **no longer maintained** here. Please use [inspec_tools](https://github.com/mitre/inspec_tools).
+
 # ckl2csv
 Converts a DISA Checklist XML file to a CSV file
 
